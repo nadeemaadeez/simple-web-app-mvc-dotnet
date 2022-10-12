@@ -39,3 +39,56 @@ pipeline:
                       type: branch
                       spec:
                         branch: main
+    - stage:
+        name: Jira approval
+        identifier: Jira_approval
+        description: ""
+        type: Approval
+        spec:
+          execution:
+            steps:
+              - step:
+                  name: Create Ticket
+                  identifier: Create_Ticket
+                  type: JiraCreate
+                  timeout: 5m
+                  spec:
+                    connectorRef: HarnessJiraConnector
+                    projectKey: HAR
+                    issueType: Story
+                    fields:
+                      - name: Summary
+                        value: The new ticket has been created
+              - step:
+                  name: Approval
+                  identifier: Approval
+                  type: JiraApproval
+                  timeout: 1d
+                  spec:
+                    approvalCriteria:
+                      type: KeyValues
+                      spec:
+                        matchAnyCondition: true
+                        conditions:
+                          - key: Status
+                            operator: equals
+                            value: To Do
+                    rejectionCriteria:
+                      type: KeyValues
+                      spec:
+                        matchAnyCondition: true
+                        conditions: []
+                    connectorRef: HarnessJiraConnector
+                    projectKey: HAR
+                    issueType: Story
+                    issueKey: HAR-1
+              - step:
+                  name: update
+                  identifier: update
+                  type: JiraUpdate
+                  timeout: 5m
+                  spec:
+                    connectorRef: HarnessJiraConnector
+                    issueKey: HAR-1
+                    fields: []
+        tags: {}
