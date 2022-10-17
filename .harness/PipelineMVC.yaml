@@ -6,33 +6,6 @@ pipeline:
   tags: {}
   stages:
     - stage:
-        name: Build CI
-        identifier: Build_CI
-        type: CI
-        spec:
-          cloneCodebase: true
-          infrastructure:
-            type: KubernetesDirect
-            spec:
-              connectorRef: harnessnadeem
-              namespace: harness-delegate-ng
-              automountServiceAccountToken: true
-              nodeSelector: {}
-              os: Linux
-          execution:
-            steps:
-              - step:
-                  type: GitClone
-                  name: GitClone
-                  identifier: GitClone
-                  spec:
-                    connectorRef: GithubConnectorMN
-                    repoName: website
-                    build:
-                      type: branch
-                      spec:
-                        branch: main
-    - stage:
         name: Jira Process
         identifier: Jira_Process
         description: ""
@@ -141,9 +114,3 @@ pipeline:
                 - AllErrors
               action:
                 type: StageRollback
-  properties:
-    ci:
-      codebase:
-        connectorRef: GithubConnectorMN
-        repoName: https://github.com/nadeemaadeez
-        build: <+input>
