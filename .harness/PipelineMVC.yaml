@@ -6,6 +6,89 @@ pipeline:
   tags: {}
   stages:
     - stage:
+        name: Build CI
+        identifier: Build_CI
+        description: ""
+        type: CI
+        spec:
+          cloneCodebase: true
+          infrastructure:
+            type: KubernetesDirect
+            spec:
+              connectorRef: harnessnadeem
+              namespace: harness-delegate-ng
+              automountServiceAccountToken: true
+              nodeSelector: {}
+              os: Linux
+          execution:
+            steps:
+              - step:
+                  type: GitClone
+                  name: GitClone
+                  identifier: GitClone
+                  spec:
+                    connectorRef: GithubConnectorMN
+                    repoName: website
+                    build:
+                      type: branch
+                      spec:
+                        branch: main
+    - stage:
+        name: Jira Process
+        identifier: Jira_Process
+        description: ""
+        type: Approval
+        spec:
+          execution:
+            steps:
+              - step:
+                  name: Create story
+                  identifier: Create_story
+                  type: JiraCreate
+                  timeout: 5m
+                  spec:
+                    connectorRef: HarnessJiraConnector
+                    projectKey: HAR
+                    issueType: Story
+                    fields:
+                      - name: Comment
+                        value: Story has been created
+                      - name: Summary
+                        value: Created harness workflow
+              - step:
+                  name: Jira approval
+                  identifier: Jira_approval
+                  type: JiraApproval
+                  timeout: 1d
+                  spec:
+                    approvalCriteria:
+                      type: KeyValues
+                      spec:
+                        matchAnyCondition: true
+                        conditions:
+                          - key: Status
+                            operator: equals
+                            value: To Do
+                    rejectionCriteria:
+                      type: KeyValues
+                      spec:
+                        matchAnyCondition: true
+                        conditions: []
+                    connectorRef: HarnessJiraConnector
+                    projectKey: HAR
+                    issueType: Story
+                    issueKey: HAR-42
+              - step:
+                  name: Complete
+                  identifier: Complete
+                  type: JiraUpdate
+                  timeout: 5m
+                  spec:
+                    connectorRef: HarnessJiraConnector
+                    issueKey: HAR-42
+                    fields: []
+        tags: {}
+    - stage:
         name: deploy
         identifier: deploy
         description: ""
@@ -59,3 +142,9 @@ pipeline:
                 - AllErrors
               action:
                 type: StageRollback
+  properties:
+    ci:
+      codebase:
+        connectorRef: GithubConnectorMN
+        repoName: https://github.com/nadeemaadeez
+        build: <+input>
