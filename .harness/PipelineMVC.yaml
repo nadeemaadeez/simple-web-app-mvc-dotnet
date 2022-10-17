@@ -8,7 +8,6 @@ pipeline:
     - stage:
         name: Build CI
         identifier: Build_CI
-        description: ""
         type: CI
         spec:
           cloneCodebase: true
