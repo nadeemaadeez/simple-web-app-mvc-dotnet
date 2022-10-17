@@ -18,20 +18,18 @@ pipeline:
                 variables: []
                 manifests:
                   - manifest:
-                      identifier: ManifestMVC
+                      identifier: manidestkube
                       type: K8sManifest
                       spec:
                         store:
-                          type: Github
+                          type: Git
                           spec:
-                            connectorRef: GithubConnectorMN
+                            connectorRef: GitKubeWebsiteConnector
                             gitFetchType: Branch
                             paths:
-                              - resources
-                            repoName: ff-golang-server-sdk
+                              - content/en/examples/application/nginx-app.yaml
+                            repoName: website
                             branch: main
-                        valuesPaths:
-                          - resources/metrics-v1.yaml
                         skipResourceVersioning: false
               type: Kubernetes
           execution:
