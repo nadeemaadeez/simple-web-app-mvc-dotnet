@@ -27,11 +27,11 @@ pipeline:
                             connectorRef: GithubConnectorMN
                             gitFetchType: Branch
                             paths:
-                              - app.yaml
-                            repoName: simple-web-app-mvc-dotnet
-                            branch: master
+                              - resources
+                            repoName: ff-golang-server-sdk
+                            branch: main
                         valuesPaths:
-                          - .harness/PipelineMVC.yaml
+                          - resources/metrics-v1.yaml
                         skipResourceVersioning: false
               type: Kubernetes
           execution:
