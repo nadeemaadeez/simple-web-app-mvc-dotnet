@@ -29,7 +29,7 @@ pipeline:
                             paths:
                               - app.yaml
                             repoName: simple-web-app-mvc-dotnet
-                            branch: mastera
+                            branch: master
                         valuesPaths:
                           - app.yaml
                         skipResourceVersioning: false
