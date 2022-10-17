@@ -31,7 +31,7 @@ pipeline:
                             repoName: simple-web-app-mvc-dotnet
                             branch: master
                         valuesPaths:
-                          - app.yaml
+                          - .harness/PipelineMVC.yaml
                         skipResourceVersioning: false
               type: Kubernetes
           execution:
