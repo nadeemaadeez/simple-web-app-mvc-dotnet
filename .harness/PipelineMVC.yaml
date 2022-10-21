@@ -51,7 +51,7 @@ pipeline:
                 namespace: harness-delegate-ng
                 releaseName: release-<+INFRA_KEY>
             environmentRef: Devlopement_environment
-            allowSimultaneousDeployments: false
+            allowSimultaneousDeployments: true
         tags: {}
         failureStrategies:
           - onFailure:
@@ -59,3 +59,5 @@ pipeline:
                 - AllErrors
               action:
                 type: StageRollback
+        delegateSelectors:
+          - harnessazuredelegate
