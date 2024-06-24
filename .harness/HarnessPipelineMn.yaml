@@ -1,0 +1,94 @@
+pipeline:
+  name: HarnessPipelineMn
+  identifier: HarnessPipelineMn
+  projectIdentifier: SampleProject
+  orgIdentifier: default
+  tags: {}
+  properties:
+    ci:
+      codebase:
+        connectorRef: GithubConnectorMN
+        repoName: simple-web-app-mvc-dotnet
+        build: <+input>
+  stages:
+    - stage:
+        name: build CI
+        identifier: build_CI
+        description: ""
+        type: CI
+        spec:
+          cloneCodebase: true
+          infrastructure:
+            type: KubernetesDirect
+            spec:
+              connectorRef: harnessnadeem
+              namespace: harness-delegate-ng
+              automountServiceAccountToken: true
+              nodeSelector: {}
+              os: Windows
+          execution:
+            steps:
+              - step:
+                  type: GitClone
+                  name: GitClone
+                  identifier: GitClone
+                  spec:
+                    connectorRef: GithubConnectorMN
+                    repoName: simple-web-app-mvc-dotnet
+                    build:
+                      type: branch
+                      spec:
+                        branch: main
+    - stage:
+        name: Jira approval
+        identifier: Jira_approval
+        description: ""
+        type: Approval
+        spec:
+          execution:
+            steps:
+              - step:
+                  name: Create Ticket
+                  identifier: Create_Ticket
+                  type: JiraCreate
+                  timeout: 5m
+                  spec:
+                    connectorRef: HarnessJiraConnector
+                    projectKey: HAR
+                    issueType: Story
+                    fields:
+                      - name: Summary
+                        value: The new ticket has been created
+              - step:
+                  name: Approval
+                  identifier: Approval
+                  type: JiraApproval
+                  timeout: 1d
+                  spec:
+                    approvalCriteria:
+                      type: KeyValues
+                      spec:
+                        matchAnyCondition: true
+                        conditions:
+                          - key: Status
+                            operator: equals
+                            value: To Do
+                    rejectionCriteria:
+                      type: KeyValues
+                      spec:
+                        matchAnyCondition: true
+                        conditions: []
+                    connectorRef: HarnessJiraConnector
+                    projectKey: HAR
+                    issueType: Story
+                    issueKey: HAR-1
+              - step:
+                  name: update
+                  identifier: update
+                  type: JiraUpdate
+                  timeout: 5m
+                  spec:
+                    connectorRef: HarnessJiraConnector
+                    issueKey: HAR-1
+                    fields: []
+        tags: {}
